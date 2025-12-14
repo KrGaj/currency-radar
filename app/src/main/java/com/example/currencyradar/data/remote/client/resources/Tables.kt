@@ -1,4 +1,4 @@
-package com.example.currencyradar.data.remote.resources
+package com.example.currencyradar.data.remote.client.resources
 
 import io.ktor.resources.Resource
 

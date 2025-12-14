@@ -6,5 +6,5 @@ import com.example.currencyradar.domain.models.CurrentRate
 fun interface CurrentRatesRepository {
     suspend fun getTable(
         type: CurrencyTableType,
-    ): List<CurrentRate>
+    ): Result<List<CurrentRate>>
 }
