@@ -32,7 +32,7 @@ private fun HttpClientConfig<*>.configureDefaultRequest() = defaultRequest {
     url {
         protocol = URLProtocol.HTTPS
         host = "api.nbp.pl"
-        path("/api")
+        path("/api/exchangerates")
     }
     contentType(ContentType.Application.Json)
 }
