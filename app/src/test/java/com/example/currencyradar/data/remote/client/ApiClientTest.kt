@@ -24,9 +24,9 @@ class ApiClientTest {
             val urlSegments = request.url.segments
 
             val content = if (urlSegments.contains("A")) {
-                Json.encodeToString(tableA)
+                Json.encodeToString(listOf(tableA))
             } else {
-                Json.encodeToString(tableB)
+                Json.encodeToString(listOf(tableB))
             }
 
             respond(
@@ -50,17 +50,17 @@ class ApiClientTest {
             CurrencyTableRateDto(
                 currency = "dolar kanadyjski",
                 code = "CAD",
-                mid = 2.6181,
+                mid = 2.6181.toBigDecimal(),
             ),
             CurrencyTableRateDto(
                 currency = "euro",
                 code = "EUR",
-                mid = 4.2271,
+                mid = 4.2271.toBigDecimal(),
             ),
             CurrencyTableRateDto(
                 currency = "korona norweska",
                 code = "NOK",
-                mid = 0.3569,
+                mid = 0.3569.toBigDecimal(),
             ),
         )
 

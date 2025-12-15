@@ -100,21 +100,21 @@ class CurrentRatesViewModelTest {
                     name = "dolar kanadyjski",
                     code = "CAD",
                 ),
-                middleValue = 2.6181,
+                middleValue = 2.6181.toBigDecimal(),
             ),
             CurrentRate(
                 currency = Currency(
                     name = "euro",
                     code = "EUR",
                 ),
-                middleValue = 4.2271,
+                middleValue = 4.2271.toBigDecimal(),
             ),
             CurrentRate(
                 currency = Currency(
                     name = "korona norweska",
                     code = "NOK",
                 ),
-                middleValue = 0.3569,
+                middleValue = 0.3569.toBigDecimal(),
             ),
         )
     }

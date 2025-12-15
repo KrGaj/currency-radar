@@ -52,17 +52,17 @@ class CurrentRatesRepositoryDefaultTest {
             CurrencyTableRateDto(
                 currency = "dolar kanadyjski",
                 code = "CAD",
-                mid = 2.6181,
+                mid = 2.6181.toBigDecimal(),
             ),
             CurrencyTableRateDto(
                 currency = "euro",
                 code = "EUR",
-                mid = 4.2271,
+                mid = 4.2271.toBigDecimal(),
             ),
             CurrencyTableRateDto(
                 currency = "korona norweska",
                 code = "NOK",
-                mid = 0.3569,
+                mid = 0.3569.toBigDecimal(),
             ),
         )
 
@@ -79,21 +79,21 @@ class CurrentRatesRepositoryDefaultTest {
                     name = "dolar kanadyjski",
                     code = "CAD",
                 ),
-                middleValue = 2.6181,
+                middleValue = 2.6181.toBigDecimal(),
             ),
             CurrentRate(
                 currency = Currency(
                     name = "euro",
                     code = "EUR",
                 ),
-                middleValue = 4.2271,
+                middleValue = 4.2271.toBigDecimal(),
             ),
             CurrentRate(
                 currency = Currency(
                     name = "korona norweska",
                     code = "NOK",
                 ),
-                middleValue = 0.3569,
+                middleValue = 0.3569.toBigDecimal(),
             ),
         )
     }
