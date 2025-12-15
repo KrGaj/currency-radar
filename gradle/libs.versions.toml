@@ -16,6 +16,7 @@ ksp = "2.3.3"
 ktor = "3.3.3"
 lifecycleRuntimeKtx = "2.10.0"
 mockk = "1.14.7"
+turbine = "1.2.1"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -45,6 +46,7 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp" }
 ktor-client-resources = { module = "io.ktor:ktor-client-resources" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # Tests
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
