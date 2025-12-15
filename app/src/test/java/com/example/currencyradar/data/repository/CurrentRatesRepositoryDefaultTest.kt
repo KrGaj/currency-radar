@@ -33,7 +33,7 @@ class CurrentRatesRepositoryDefaultTest {
     fun `Repository returns success with list of recent rates`() = runTest {
         coEvery { apiClient.getCurrentRatesTable(CurrencyTableType.A) } returns tableA
 
-        val result = repository.getTable(CurrencyTableType.A)
+        val result = repository.getCurrentRates(CurrencyTableType.A)
         result shouldBe Result.success(currentRates)
     }
 
@@ -43,7 +43,7 @@ class CurrentRatesRepositoryDefaultTest {
 
         coEvery { apiClient.getCurrentRatesTable(any()) } throws expectedException
 
-        val result = repository.getTable(CurrencyTableType.A)
+        val result = repository.getCurrentRates(CurrencyTableType.A)
         result shouldBe Result.failure(expectedException)
     }
 

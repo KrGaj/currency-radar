@@ -4,7 +4,7 @@ import com.example.currencyradar.domain.models.CurrencyTableType
 import com.example.currencyradar.domain.models.CurrentRate
 
 fun interface CurrentRatesRepository {
-    suspend fun getTable(
-        type: CurrencyTableType,
+    suspend fun getCurrentRates(
+        tableType: CurrencyTableType,
     ): Result<List<CurrentRate>>
 }

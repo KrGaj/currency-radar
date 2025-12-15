@@ -15,11 +15,11 @@ class CurrentRatesRepositoryDefault(
     private val apiClient: ApiClient,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : CurrentRatesRepository {
-    override suspend fun getTable(
-        type: CurrencyTableType,
+    override suspend fun getCurrentRates(
+        tableType: CurrencyTableType,
     ): Result<List<CurrentRate>> = withContext(dispatcher) {
         Result.runCatching {
-            val response = apiClient.getCurrentRatesTable(type)
+            val response = apiClient.getCurrentRatesTable(tableType)
             return@runCatching response.toCurrentRates()
         }
     }
