@@ -1,6 +1,6 @@
 package com.example.currencyradar.data.remote.client
 
-import com.example.currencyradar.data.remote.dto.CurrencyTableDto
+import com.example.currencyradar.data.remote.dto.current_rates.CurrentRatesTableDto
 import com.example.currencyradar.data.remote.client.resources.Tables
 import com.example.currencyradar.domain.models.CurrencyTableType
 import io.ktor.client.HttpClient
@@ -59,14 +59,14 @@ class ApiClient(
 
     suspend fun getCurrentRatesTable(
         table: CurrencyTableType,
-    ): CurrencyTableDto {
+    ): CurrentRatesTableDto {
         val response = client.get(
             Tables.Table(
                 table = table.name,
             ),
         )
 
-        val tables: List<CurrencyTableDto> = response.body()
+        val tables: List<CurrentRatesTableDto> = response.body()
         return tables.last()
     }
 }
