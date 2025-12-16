@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">CurrencyRadar</string>
+    <string name="app_name" translatable="false">CurrencyRadar</string>
+    <string name="fetch_error_msg">An error during data fetch occurred</string>
+    <string name="table_tab_label">Table %1$s</string>
 </resources>
