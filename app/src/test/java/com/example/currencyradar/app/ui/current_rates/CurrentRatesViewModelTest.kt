@@ -1,10 +1,9 @@
 package com.example.currencyradar.app.ui.current_rates
 
 import app.cash.turbine.test
-import com.example.currencyradar.domain.models.Currency
 import com.example.currencyradar.domain.models.CurrencyTableType
-import com.example.currencyradar.domain.models.CurrentRate
 import com.example.currencyradar.domain.repository.CurrentRatesRepository
+import com.example.currencyradar.test_data.CurrentRatesTestData
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -44,7 +43,7 @@ class CurrentRatesViewModelTest {
     fun `Data are not fetched until VM state's first subscription`() = runTest {
         coEvery {
             currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(currentRates)
+        } returns Result.success(CurrentRatesTestData.currentRates)
 
         viewModel = CurrentRatesViewModel(currentRatesRepository)
         testScheduler.runCurrent()
@@ -62,7 +61,7 @@ class CurrentRatesViewModelTest {
     fun `Data are automatically fetched only on VM state's first subscription`() = runTest {
         coEvery {
             currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(currentRates)
+        } returns Result.success(CurrentRatesTestData.currentRates)
 
         viewModel = CurrentRatesViewModel(currentRatesRepository)
         testScheduler.runCurrent()
@@ -89,7 +88,7 @@ class CurrentRatesViewModelTest {
 
         coEvery {
             currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(currentRates)
+        } returns Result.success(CurrentRatesTestData.currentRates)
 
         viewModel.getCurrentRates(tableType = selectedTable)
         testScheduler.runCurrent()
@@ -97,7 +96,7 @@ class CurrentRatesViewModelTest {
         viewModel.uiState.test {
             val currentState = awaitItem()
 
-            currentState.currentRates shouldBe currentRates
+            currentState.currentRates shouldBe CurrentRatesTestData.currentRates
             currentState.selectedTabIndex shouldBe selectedTable.ordinal
             currentState.isLoading shouldBe false
             currentState.error shouldBe null
@@ -108,7 +107,7 @@ class CurrentRatesViewModelTest {
     fun `When fetching data, state correctly indicates loading`() = runTest {
         coEvery {
             currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(currentRates)
+        } returns Result.success(CurrentRatesTestData.currentRates)
 
         viewModel.getCurrentRates(tableType = CurrencyTableType.B)
         viewModel.uiState.test {
@@ -147,7 +146,7 @@ class CurrentRatesViewModelTest {
     fun `When error occurs, tab index is set to its previous value`() = runTest {
         coEvery {
             currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(currentRates)
+        } returns Result.success(CurrentRatesTestData.currentRates)
 
         viewModel.getCurrentRates(tableType = CurrencyTableType.B)
         testScheduler.runCurrent()
@@ -162,31 +161,5 @@ class CurrentRatesViewModelTest {
         viewModel.uiState.test {
             awaitItem().selectedTabIndex shouldBe CurrencyTableType.B.ordinal
         }
-    }
-
-    companion object {
-        private val currentRates = listOf(
-            CurrentRate(
-                currency = Currency(
-                    name = "dolar kanadyjski",
-                    code = "CAD",
-                ),
-                middleValue = 2.6181.toBigDecimal(),
-            ),
-            CurrentRate(
-                currency = Currency(
-                    name = "euro",
-                    code = "EUR",
-                ),
-                middleValue = 4.2271.toBigDecimal(),
-            ),
-            CurrentRate(
-                currency = Currency(
-                    name = "korona norweska",
-                    code = "NOK",
-                ),
-                middleValue = 0.3569.toBigDecimal(),
-            ),
-        )
     }
 }

@@ -1,11 +1,8 @@
 package com.example.currencyradar.data.repository
 
 import com.example.currencyradar.data.remote.client.ApiClient
-import com.example.currencyradar.data.remote.dto.CurrencyTableDto
-import com.example.currencyradar.data.remote.dto.CurrencyTableRateDto
-import com.example.currencyradar.domain.models.Currency
 import com.example.currencyradar.domain.models.CurrencyTableType
-import com.example.currencyradar.domain.models.CurrentRate
+import com.example.currencyradar.test_data.CurrentRatesTestData
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -31,10 +28,10 @@ class CurrentRatesRepositoryDefaultTest {
 
     @Test
     fun `Repository returns success with list of recent rates`() = runTest {
-        coEvery { apiClient.getCurrentRatesTable(CurrencyTableType.A) } returns tableA
+        coEvery { apiClient.getCurrentRatesTable(CurrencyTableType.A) } returns CurrentRatesTestData.tableA
 
         val result = repository.getCurrentRates(CurrencyTableType.A)
-        result shouldBe Result.success(currentRates)
+        result shouldBe Result.success(CurrentRatesTestData.currentRates)
     }
 
     @Test
@@ -45,56 +42,5 @@ class CurrentRatesRepositoryDefaultTest {
 
         val result = repository.getCurrentRates(CurrencyTableType.A)
         result shouldBe Result.failure(expectedException)
-    }
-
-    companion object {
-        private val rates = listOf(
-            CurrencyTableRateDto(
-                currency = "dolar kanadyjski",
-                code = "CAD",
-                mid = 2.6181.toBigDecimal(),
-            ),
-            CurrencyTableRateDto(
-                currency = "euro",
-                code = "EUR",
-                mid = 4.2271.toBigDecimal(),
-            ),
-            CurrencyTableRateDto(
-                currency = "korona norweska",
-                code = "NOK",
-                mid = 0.3569.toBigDecimal(),
-            ),
-        )
-
-        private val tableA = CurrencyTableDto(
-            tableName = "A",
-            number = "241/A/NBP/2025",
-            effectiveDate = "2025-12-12",
-            rates = rates,
-        )
-
-        private val currentRates = listOf(
-            CurrentRate(
-                currency = Currency(
-                    name = "dolar kanadyjski",
-                    code = "CAD",
-                ),
-                middleValue = 2.6181.toBigDecimal(),
-            ),
-            CurrentRate(
-                currency = Currency(
-                    name = "euro",
-                    code = "EUR",
-                ),
-                middleValue = 4.2271.toBigDecimal(),
-            ),
-            CurrentRate(
-                currency = Currency(
-                    name = "korona norweska",
-                    code = "NOK",
-                ),
-                middleValue = 0.3569.toBigDecimal(),
-            ),
-        )
     }
 }

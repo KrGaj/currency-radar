@@ -1,8 +1,7 @@
 package com.example.currencyradar.data.remote.client
 
-import com.example.currencyradar.data.remote.dto.CurrencyTableDto
-import com.example.currencyradar.data.remote.dto.CurrencyTableRateDto
 import com.example.currencyradar.domain.models.CurrencyTableType
+import com.example.currencyradar.test_data.CurrentRatesTestData
 import io.kotest.matchers.shouldBe
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -24,9 +23,9 @@ class ApiClientTest {
             val urlSegments = request.url.segments
 
             val content = if (urlSegments.contains("A")) {
-                Json.encodeToString(listOf(tableA))
+                Json.encodeToString(listOf(CurrentRatesTestData.tableA))
             } else {
-                Json.encodeToString(listOf(tableB))
+                Json.encodeToString(listOf(CurrentRatesTestData.tableB))
             }
 
             respond(
@@ -42,40 +41,6 @@ class ApiClientTest {
     @Test
     fun `Client returns correct table`() = runTest {
         val response = apiClient.getCurrentRatesTable(CurrencyTableType.A)
-        response shouldBe tableA
-    }
-
-    companion object {
-        private val rates = listOf(
-            CurrencyTableRateDto(
-                currency = "dolar kanadyjski",
-                code = "CAD",
-                mid = 2.6181.toBigDecimal(),
-            ),
-            CurrencyTableRateDto(
-                currency = "euro",
-                code = "EUR",
-                mid = 4.2271.toBigDecimal(),
-            ),
-            CurrencyTableRateDto(
-                currency = "korona norweska",
-                code = "NOK",
-                mid = 0.3569.toBigDecimal(),
-            ),
-        )
-
-        private val tableA = CurrencyTableDto(
-            tableName = "A",
-            number = "241/A/NBP/2025",
-            effectiveDate = "2025-12-12",
-            rates = rates,
-        )
-
-        private val tableB = CurrencyTableDto(
-            tableName = "B",
-            number = "241/A/NBP/2025",
-            effectiveDate = "2025-12-12",
-            rates = rates.dropLast(1),
-        )
+        response shouldBe CurrentRatesTestData.tableA
     }
 }
