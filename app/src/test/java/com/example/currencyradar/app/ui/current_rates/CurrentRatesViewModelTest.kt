@@ -7,9 +7,12 @@ import com.example.currencyradar.domain.models.CurrentRate
 import com.example.currencyradar.domain.repository.CurrentRatesRepository
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -35,6 +38,49 @@ class CurrentRatesViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `Data are not fetched until VM state's first subscription`() = runTest {
+        coEvery {
+            currentRatesRepository.getCurrentRates(any())
+        } returns Result.success(currentRates)
+
+        viewModel = CurrentRatesViewModel(currentRatesRepository)
+        testScheduler.runCurrent()
+        coVerify(exactly = 0) { currentRatesRepository.getCurrentRates(any()) }
+
+        viewModel.uiState.test {
+            awaitItem() shouldBe CurrentRatesUiState()
+        }
+
+        testScheduler.runCurrent()
+        coVerify(exactly = 1) { currentRatesRepository.getCurrentRates(any()) }
+    }
+
+    @Test
+    fun `Data are automatically fetched only on VM state's first subscription`() = runTest {
+        coEvery {
+            currentRatesRepository.getCurrentRates(any())
+        } returns Result.success(currentRates)
+
+        viewModel = CurrentRatesViewModel(currentRatesRepository)
+        testScheduler.runCurrent()
+        coVerify(exactly = 0) { currentRatesRepository.getCurrentRates(any()) }
+
+        viewModel.uiState.test {
+            awaitItem() shouldBe CurrentRatesUiState()
+        }
+
+        val job = launch {
+            viewModel.uiState.collect()
+        }
+
+        testScheduler.runCurrent()
+        job.cancel()
+
+        testScheduler.runCurrent()
+        coVerify(exactly = 1) { currentRatesRepository.getCurrentRates(any()) }
     }
 
     @Test
