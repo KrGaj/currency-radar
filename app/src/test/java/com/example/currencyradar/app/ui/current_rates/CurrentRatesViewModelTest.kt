@@ -39,17 +39,20 @@ class CurrentRatesViewModelTest {
 
     @Test
     fun `After data fetch, state contains list of current rates`() = runTest {
+        val selectedTable = CurrencyTableType.B
+
         coEvery {
             currentRatesRepository.getCurrentRates(any())
         } returns Result.success(currentRates)
 
-        viewModel.getCurrentRates(tableType = CurrencyTableType.B)
+        viewModel.getCurrentRates(tableType = selectedTable)
         testScheduler.runCurrent()
 
         viewModel.uiState.test {
             val currentState = awaitItem()
 
             currentState.currentRates shouldBe currentRates
+            currentState.selectedTabIndex shouldBe selectedTable.ordinal
             currentState.isLoading shouldBe false
             currentState.error shouldBe null
         }
@@ -88,8 +91,30 @@ class CurrentRatesViewModelTest {
             val currentState = awaitItem()
 
             currentState.currentRates shouldBe emptyList()
+            currentState.selectedTabIndex shouldBe CurrencyTableType.A.ordinal
             currentState.isLoading shouldBe false
             currentState.error shouldBe expectedException
+        }
+    }
+
+    @Test
+    fun `When error occurs, tab index is set to its previous value`() = runTest {
+        coEvery {
+            currentRatesRepository.getCurrentRates(any())
+        } returns Result.success(currentRates)
+
+        viewModel.getCurrentRates(tableType = CurrencyTableType.B)
+        testScheduler.runCurrent()
+
+        coEvery {
+            currentRatesRepository.getCurrentRates(any())
+        } returns Result.failure(IllegalStateException())
+
+        viewModel.getCurrentRates(tableType = CurrencyTableType.A)
+        testScheduler.runCurrent()
+
+        viewModel.uiState.test {
+            awaitItem().selectedTabIndex shouldBe CurrencyTableType.B.ordinal
         }
     }
 
