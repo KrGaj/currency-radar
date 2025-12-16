@@ -16,6 +16,7 @@ ksp = "2.3.3"
 ktor = "3.3.3"
 lifecycleRuntimeKtx = "2.10.0"
 mockk = "1.14.7"
+navigation = "2.9.6"
 turbine = "1.2.1"
 
 [libraries]
@@ -28,6 +29,7 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
