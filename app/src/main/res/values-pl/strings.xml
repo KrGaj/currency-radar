@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fetch_error_msg">Wystąpił błąd podczas pobierania danych</string>
+    <string name="table_tab_label">Tabela %1$s</string>
+</resources>

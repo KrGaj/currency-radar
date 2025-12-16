@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import kotlin.properties.Delegates
 
 @KoinViewModel
 class CurrentRatesViewModel(
@@ -21,15 +22,24 @@ class CurrentRatesViewModel(
     fun getCurrentRates(
         tableType: CurrencyTableType,
     ) {
-        _uiState.update { it.copy(isLoading = true) }
+        var oldTabIndex by Delegates.notNull<Int>()
+
+        _uiState.update {
+            oldTabIndex = it.selectedTabIndex
+
+            CurrentRatesUiState(
+                isLoading = true,
+                selectedTabIndex = tableType.ordinal,
+            )
+        }
 
         viewModelScope.launch {
-            val result = currentRatesRepository.getCurrentRates(tableType)
+            val ratesResult = currentRatesRepository.getCurrentRates(tableType)
 
             _uiState.update {
-                result.fold(
-                    onSuccess = { data -> CurrentRatesUiState(currentRates = data) },
-                    onFailure = { error -> CurrentRatesUiState(error = error) },
+                ratesResult.fold(
+                    onSuccess = { data -> it.copy(currentRates = data, isLoading = false) },
+                    onFailure = { error -> it.copy(error = error, isLoading = false, selectedTabIndex = oldTabIndex) },
                 )
             }
         }
