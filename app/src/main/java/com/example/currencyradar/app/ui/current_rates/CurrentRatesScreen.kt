@@ -59,6 +59,7 @@ fun CurrentRatesScreen(
             val errorMsg = stringResource(R.string.fetch_error_msg)
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(errorMsg)
+                currentRatesViewModel.onErrorMessageShown()
             }
         }
 
