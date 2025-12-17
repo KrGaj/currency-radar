@@ -2,7 +2,9 @@ package com.example.currencyradar.app.common
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
@@ -13,8 +15,9 @@ fun <T> MutableStateFlow<T>.onFirstSubscription(
     scope.launch {
         subscriptionCount.filter { it == 1 }
             .take(1)
-            .collect {
+            .onCompletion {
                 action()
             }
+            .collect()
     }
 }
