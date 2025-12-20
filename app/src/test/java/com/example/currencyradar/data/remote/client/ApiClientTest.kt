@@ -1,6 +1,6 @@
 package com.example.currencyradar.data.remote.client
 
-import com.example.currencyradar.domain.models.CurrencyTableType
+import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.test_data.CurrentRatesTestData
 import io.kotest.matchers.shouldBe
 import io.ktor.client.engine.mock.MockEngine
@@ -40,7 +40,7 @@ class ApiClientTest {
 
     @Test
     fun `Client returns correct table`() = runTest {
-        val response = apiClient.getCurrentRatesTable(CurrencyTableType.A)
+        val response = apiClient.getCurrentRatesTable(TableType.A)
         response shouldBe CurrentRatesTestData.tableA
     }
 }

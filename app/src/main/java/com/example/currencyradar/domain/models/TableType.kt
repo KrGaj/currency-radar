@@ -1,6 +1,6 @@
 package com.example.currencyradar.domain.models
 
-enum class CurrencyTableType {
+enum class TableType {
     A,
     B,
 }

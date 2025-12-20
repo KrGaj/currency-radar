@@ -2,7 +2,7 @@ package com.example.currencyradar.data.repository
 
 import com.example.currencyradar.data.mapper.toCurrentRates
 import com.example.currencyradar.data.remote.client.ApiClient
-import com.example.currencyradar.domain.models.CurrencyTableType
+import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.domain.models.CurrentRate
 import com.example.currencyradar.domain.repository.CurrentRatesRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,7 +16,7 @@ class CurrentRatesRepositoryDefault(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : CurrentRatesRepository {
     override suspend fun getCurrentRates(
-        tableType: CurrencyTableType,
+        tableType: TableType,
     ): Result<List<CurrentRate>> = withContext(dispatcher) {
         Result.runCatching {
             val response = apiClient.getCurrentRatesTable(tableType)

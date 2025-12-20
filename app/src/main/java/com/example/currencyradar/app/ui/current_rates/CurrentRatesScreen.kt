@@ -36,7 +36,7 @@ import com.example.currencyradar.R
 import com.example.currencyradar.app.common.toCapitalized
 import com.example.currencyradar.app.ui.theme.Typography
 import com.example.currencyradar.domain.models.Currency
-import com.example.currencyradar.domain.models.CurrencyTableType
+import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.domain.models.CurrentRate
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -75,7 +75,7 @@ fun CurrentRatesScreen(
 private fun CurrentRatesScreen(
     modifier: Modifier = Modifier,
     uiState: CurrentRatesUiState,
-    onTabClick: (CurrencyTableType) -> Unit,
+    onTabClick: (TableType) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -106,13 +106,13 @@ private fun CurrentRatesScreen(
 private fun CurrentRatesTabRow(
     modifier: Modifier = Modifier,
     selectedTabIndex: Int,
-    onTabClick: (CurrencyTableType) -> Unit,
+    onTabClick: (TableType) -> Unit,
 ) {
     PrimaryTabRow(
         modifier = modifier,
         selectedTabIndex = selectedTabIndex,
     ) {
-        CurrencyTableType.entries.forEachIndexed { index, tableType ->
+        TableType.entries.forEachIndexed { index, tableType ->
             Tab(
                 selected = selectedTabIndex == index,
                 onClick = { onTabClick(tableType) },

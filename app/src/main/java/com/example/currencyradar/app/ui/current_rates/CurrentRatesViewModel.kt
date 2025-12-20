@@ -3,7 +3,7 @@ package com.example.currencyradar.app.ui.current_rates
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.currencyradar.app.common.onFirstSubscription
-import com.example.currencyradar.domain.models.CurrencyTableType
+import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.domain.repository.CurrentRatesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,13 +25,13 @@ class CurrentRatesViewModel(
         _uiState.onFirstSubscription(
             scope = viewModelScope,
         ) {
-            val tableType = CurrencyTableType.entries[_uiState.value.selectedTabIndex]
+            val tableType = TableType.entries[_uiState.value.selectedTabIndex]
             getCurrentRates(tableType)
         }
     }
 
     fun getCurrentRates(
-        tableType: CurrencyTableType,
+        tableType: TableType,
     ) {
         var oldTabIndex by Delegates.notNull<Int>()
 

@@ -2,7 +2,7 @@ package com.example.currencyradar.data.remote.client
 
 import com.example.currencyradar.data.remote.dto.current_rates.CurrentRatesTableDto
 import com.example.currencyradar.data.remote.client.resources.Tables
-import com.example.currencyradar.domain.models.CurrencyTableType
+import com.example.currencyradar.domain.models.TableType
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
@@ -58,11 +58,11 @@ class ApiClient(
     }
 
     suspend fun getCurrentRatesTable(
-        table: CurrencyTableType,
+        table: TableType,
     ): CurrentRatesTableDto {
         val response = client.get(
             Tables.Table(
-                table = table.name,
+                table = table,
             ),
         )
 

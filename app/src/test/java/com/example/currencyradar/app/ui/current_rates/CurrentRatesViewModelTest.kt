@@ -1,7 +1,7 @@
 package com.example.currencyradar.app.ui.current_rates
 
 import app.cash.turbine.test
-import com.example.currencyradar.domain.models.CurrencyTableType
+import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.domain.repository.CurrentRatesRepository
 import com.example.currencyradar.test_data.CurrentRatesTestData
 import io.kotest.matchers.shouldBe
@@ -84,7 +84,7 @@ class CurrentRatesViewModelTest {
 
     @Test
     fun `After data fetch, state contains list of current rates`() = runTest {
-        val selectedTable = CurrencyTableType.B
+        val selectedTable = TableType.B
 
         coEvery {
             currentRatesRepository.getCurrentRates(any())
@@ -109,7 +109,7 @@ class CurrentRatesViewModelTest {
             currentRatesRepository.getCurrentRates(any())
         } returns Result.success(CurrentRatesTestData.currentRates)
 
-        viewModel.getCurrentRates(tableType = CurrencyTableType.B)
+        viewModel.getCurrentRates(tableType = TableType.B)
         viewModel.uiState.test {
             awaitItem().isLoading shouldBe true
         }
@@ -129,14 +129,14 @@ class CurrentRatesViewModelTest {
             currentRatesRepository.getCurrentRates(any())
         } returns Result.failure(expectedException)
 
-        viewModel.getCurrentRates(tableType = CurrencyTableType.B)
+        viewModel.getCurrentRates(tableType = TableType.B)
         testScheduler.runCurrent()
 
         viewModel.uiState.test {
             val currentState = awaitItem()
 
             currentState.currentRates shouldBe emptyList()
-            currentState.selectedTabIndex shouldBe CurrencyTableType.A.ordinal
+            currentState.selectedTabIndex shouldBe TableType.A.ordinal
             currentState.isLoading shouldBe false
             currentState.error shouldBe expectedException
         }
@@ -148,18 +148,18 @@ class CurrentRatesViewModelTest {
             currentRatesRepository.getCurrentRates(any())
         } returns Result.success(CurrentRatesTestData.currentRates)
 
-        viewModel.getCurrentRates(tableType = CurrencyTableType.B)
+        viewModel.getCurrentRates(tableType = TableType.B)
         testScheduler.runCurrent()
 
         coEvery {
             currentRatesRepository.getCurrentRates(any())
         } returns Result.failure(IllegalStateException())
 
-        viewModel.getCurrentRates(tableType = CurrencyTableType.A)
+        viewModel.getCurrentRates(tableType = TableType.A)
         testScheduler.runCurrent()
 
         viewModel.uiState.test {
-            awaitItem().selectedTabIndex shouldBe CurrencyTableType.B.ordinal
+            awaitItem().selectedTabIndex shouldBe TableType.B.ordinal
         }
     }
 }

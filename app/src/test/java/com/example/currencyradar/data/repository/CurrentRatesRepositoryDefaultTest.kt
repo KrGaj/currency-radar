@@ -1,7 +1,7 @@
 package com.example.currencyradar.data.repository
 
 import com.example.currencyradar.data.remote.client.ApiClient
-import com.example.currencyradar.domain.models.CurrencyTableType
+import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.test_data.CurrentRatesTestData
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
@@ -28,9 +28,9 @@ class CurrentRatesRepositoryDefaultTest {
 
     @Test
     fun `Repository returns success with list of recent rates`() = runTest {
-        coEvery { apiClient.getCurrentRatesTable(CurrencyTableType.A) } returns CurrentRatesTestData.tableA
+        coEvery { apiClient.getCurrentRatesTable(TableType.A) } returns CurrentRatesTestData.tableA
 
-        val result = repository.getCurrentRates(CurrencyTableType.A)
+        val result = repository.getCurrentRates(TableType.A)
         result shouldBe Result.success(CurrentRatesTestData.currentRates)
     }
 
@@ -40,7 +40,7 @@ class CurrentRatesRepositoryDefaultTest {
 
         coEvery { apiClient.getCurrentRatesTable(any()) } throws expectedException
 
-        val result = repository.getCurrentRates(CurrencyTableType.A)
+        val result = repository.getCurrentRates(TableType.A)
         result shouldBe Result.failure(expectedException)
     }
 }
