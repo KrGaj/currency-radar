@@ -11,6 +11,7 @@ koin-annotations = "2.3.1"
 kotest = "6.0.7"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
+kotlinx-datetime = "0.7.1"
 kotlinx-serialization-json = "1.9.0"
 ksp = "2.3.4"
 ktor = "3.3.3"
@@ -40,6 +41,7 @@ kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bo
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation" }

@@ -1,7 +1,10 @@
 package com.example.currencyradar.data.remote.client
 
+import com.example.currencyradar.data.remote.client.resources.Rates
 import com.example.currencyradar.data.remote.dto.current_rates.CurrentRatesTableDto
 import com.example.currencyradar.data.remote.client.resources.Tables
+import com.example.currencyradar.data.remote.dto.rate_history.RateHistoryDto
+import com.example.currencyradar.domain.models.Currency
 import com.example.currencyradar.domain.models.TableType
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -19,10 +22,10 @@ import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 import kotlin.time.Duration.Companion.seconds
-
 
 @Single
 class ApiClient(
@@ -68,5 +71,31 @@ class ApiClient(
 
         val tables: List<CurrentRatesTableDto> = response.body()
         return tables.last()
+    }
+
+    suspend fun getRateHistory(
+        currency: Currency,
+        tableType: TableType,
+        from: LocalDate,
+        to: LocalDate,
+    ): RateHistoryDto {
+        val ratesTableResource = Rates.Table(
+            table = tableType,
+        )
+        val currencyResource = Rates.Table.Code(
+            parent = ratesTableResource,
+            code = currency.code,
+        )
+        val ratesInRangeResource = Rates.Table.Code.DateRange(
+            parent = currencyResource,
+            startDate = from,
+            endDate = to,
+        )
+
+        val response = client.get(
+            ratesInRangeResource,
+        )
+
+        return response.body()
     }
 }
