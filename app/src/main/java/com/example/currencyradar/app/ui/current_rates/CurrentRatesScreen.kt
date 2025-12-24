@@ -44,7 +44,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CurrentRatesScreen(
     currentRatesViewModel: CurrentRatesViewModel = koinViewModel(),
-    onCurrencyListItemClick: () -> Unit,
+    onCurrencyListItemClick: (Currency) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -78,7 +78,7 @@ private fun CurrentRatesScreen(
     modifier: Modifier = Modifier,
     uiState: CurrentRatesUiState,
     onTabClick: (TableType) -> Unit,
-    onCurrencyListItemClick: () -> Unit,
+    onCurrencyListItemClick: (Currency) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -134,7 +134,7 @@ private fun CurrentRatesTabRow(
 private fun CurrentRatesList(
     modifier: Modifier = Modifier,
     currentRates: List<CurrentRate>,
-    onItemClick: () -> Unit,
+    onItemClick: (Currency) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().then(modifier),
@@ -156,13 +156,13 @@ private fun CurrentRatesList(
 private fun CurrentRateItem(
     modifier: Modifier = Modifier,
     currentRate: CurrentRate,
-    onClick: () -> Unit,
+    onClick: (Currency) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                onClick = onClick,
+                onClick = { onClick(currentRate.currency) },
             )
             .then(modifier),
         horizontalArrangement = Arrangement.SpaceBetween,
