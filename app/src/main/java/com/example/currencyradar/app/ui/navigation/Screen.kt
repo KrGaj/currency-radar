@@ -1,9 +1,10 @@
 package com.example.currencyradar.app.ui.navigation
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class Screen {
     @Serializable
-    object CurrentRates : Screen()
+    object CurrentRates : Screen(), NavKey
 }
