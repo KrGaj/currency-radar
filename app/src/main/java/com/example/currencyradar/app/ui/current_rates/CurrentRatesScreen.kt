@@ -44,6 +44,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CurrentRatesScreen(
     currentRatesViewModel: CurrentRatesViewModel = koinViewModel(),
+    onCurrencyListItemClick: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -67,6 +68,7 @@ fun CurrentRatesScreen(
             modifier = Modifier.padding(innerPadding),
             uiState = uiState,
             onTabClick = { currentRatesViewModel.getCurrentRates(it) },
+            onCurrencyListItemClick = onCurrencyListItemClick,
         )
     }
 }
@@ -76,6 +78,7 @@ private fun CurrentRatesScreen(
     modifier: Modifier = Modifier,
     uiState: CurrentRatesUiState,
     onTabClick: (TableType) -> Unit,
+    onCurrencyListItemClick: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -97,6 +100,7 @@ private fun CurrentRatesScreen(
 
             CurrentRatesList(
                 currentRates = uiState.currentRates,
+                onItemClick = onCurrencyListItemClick,
             )
         }
     }
@@ -130,6 +134,7 @@ private fun CurrentRatesTabRow(
 private fun CurrentRatesList(
     modifier: Modifier = Modifier,
     currentRates: List<CurrentRate>,
+    onItemClick: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().then(modifier),
@@ -141,7 +146,7 @@ private fun CurrentRatesList(
         ) {
             CurrentRateItem(
                 currentRate = it,
-                onClick = {},
+                onClick = onItemClick,
             )
         }
     }
@@ -196,7 +201,9 @@ private fun PreviewCurrentRatesScreen() {
     MaterialTheme {
         CurrentRatesScreen(
             uiState = currentRatesUiState,
-        ) {}
+            onTabClick = {},
+            onCurrencyListItemClick = {},
+        )
     }
 }
 
@@ -206,7 +213,9 @@ private fun PreviewCurrentRatesScreenLoading() {
     MaterialTheme {
         CurrentRatesScreen(
             uiState = currentRatesUiState.copy(isLoading = true),
-        ) {}
+            onTabClick = {},
+            onCurrencyListItemClick = {},
+        )
     }
 }
 
