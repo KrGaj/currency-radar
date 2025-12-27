@@ -1,7 +1,9 @@
 package com.example.currencyradar.test_data
 
+import com.example.currencyradar.data.mapper.toDailyRates
 import com.example.currencyradar.data.remote.dto.rate_history.DailyRateDto
 import com.example.currencyradar.data.remote.dto.rate_history.RateHistoryDto
+import com.example.currencyradar.domain.models.Currency
 import kotlinx.datetime.LocalDate
 
 object RateHistoryTestData {
@@ -58,5 +60,12 @@ object RateHistoryTestData {
         currencyName = "euro",
         currencyCode = "EUR",
         rates = rateHistoryDtoEntries,
+    )
+
+    val rateHistory = rateHistoryDto.toDailyRates()
+
+    val currency = Currency(
+        rateHistoryDto.currencyName,
+        rateHistoryDto.currencyCode,
     )
 }

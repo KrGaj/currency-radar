@@ -1,8 +1,6 @@
 package com.example.currencyradar.data.repository
 
-import com.example.currencyradar.data.mapper.toDailyRates
 import com.example.currencyradar.data.remote.client.ApiClient
-import com.example.currencyradar.domain.models.Currency
 import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.test_data.RateHistoryTestData
 import io.kotest.matchers.shouldBe
@@ -30,12 +28,8 @@ class RateHistoryRepositoryDefaultTest {
 
     @Test
     fun `Repository returns result wrapping single currency rate history`() = runTest {
-        val expectedResult = Result.success(RateHistoryTestData.rateHistoryDto.toDailyRates())
+        val expectedResult = Result.success(RateHistoryTestData.rateHistory)
 
-        val currency = Currency(
-            RateHistoryTestData.rateHistoryDto.currencyName,
-            RateHistoryTestData.rateHistoryDto.currencyCode,
-        )
         val tableType = TableType.valueOf(RateHistoryTestData.rateHistoryDto.table)
         val dataFrom = RateHistoryTestData.rateHistoryDto.rates.first().effectiveDate
         val dataTo = RateHistoryTestData.rateHistoryDto.rates.last().effectiveDate
@@ -44,7 +38,7 @@ class RateHistoryRepositoryDefaultTest {
             apiClient.getRateHistory(any(), any(), any(), any())
         } returns RateHistoryTestData.rateHistoryDto
 
-        val result = repository.getRateHistory(currency, tableType, dataFrom, dataTo)
+        val result = repository.getRateHistory(RateHistoryTestData.currency, tableType, dataFrom, dataTo)
 
         result shouldBe expectedResult
     }
