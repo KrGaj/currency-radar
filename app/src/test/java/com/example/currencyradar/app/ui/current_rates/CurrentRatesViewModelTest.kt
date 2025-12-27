@@ -6,12 +6,10 @@ import com.example.currencyradar.domain.repository.CurrentRatesRepository
 import com.example.currencyradar.test_data.CurrentRatesTestData
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -19,6 +17,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
 
 class CurrentRatesViewModelTest {
     private lateinit var currentRatesRepository: CurrentRatesRepository
@@ -30,6 +29,14 @@ class CurrentRatesViewModelTest {
         Dispatchers.setMain(StandardTestDispatcher())
 
         currentRatesRepository = mockk()
+
+        coEvery {
+            currentRatesRepository.getCurrentRates(any())
+        } coAnswers {
+            delay(1.seconds)
+            Result.success(CurrentRatesTestData.currentRates)
+        }
+
         viewModel = CurrentRatesViewModel(currentRatesRepository)
     }
 
@@ -40,46 +47,15 @@ class CurrentRatesViewModelTest {
     }
 
     @Test
-    fun `Data are not fetched until VM state's first subscription`() = runTest {
-        coEvery {
-            currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(CurrentRatesTestData.currentRates)
-
-        viewModel = CurrentRatesViewModel(currentRatesRepository)
-        testScheduler.runCurrent()
-        coVerify(exactly = 0) { currentRatesRepository.getCurrentRates(any()) }
-
+    fun `After state subscription, data are fetched correctly`() = runTest {
         viewModel.uiState.test {
-            awaitItem() shouldBe CurrentRatesUiState()
+            testScheduler.advanceUntilIdle()
+
+            skipItems(2)
+            awaitItem() shouldBe CurrentRatesUiState(
+                currentRates = CurrentRatesTestData.currentRates,
+            )
         }
-
-        testScheduler.runCurrent()
-        coVerify(exactly = 1) { currentRatesRepository.getCurrentRates(any()) }
-    }
-
-    @Test
-    fun `Data are automatically fetched only on VM state's first subscription`() = runTest {
-        coEvery {
-            currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(CurrentRatesTestData.currentRates)
-
-        viewModel = CurrentRatesViewModel(currentRatesRepository)
-        testScheduler.runCurrent()
-        coVerify(exactly = 0) { currentRatesRepository.getCurrentRates(any()) }
-
-        viewModel.uiState.test {
-            awaitItem() shouldBe CurrentRatesUiState()
-        }
-
-        val job = launch {
-            viewModel.uiState.collect()
-        }
-
-        testScheduler.runCurrent()
-        job.cancel()
-
-        testScheduler.runCurrent()
-        coVerify(exactly = 1) { currentRatesRepository.getCurrentRates(any()) }
     }
 
     @Test
@@ -88,77 +64,101 @@ class CurrentRatesViewModelTest {
 
         coEvery {
             currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(CurrentRatesTestData.currentRates)
-
-        viewModel.getCurrentRates(tableType = selectedTable)
-        testScheduler.runCurrent()
+        } coAnswers {
+            delay(1.seconds)
+            Result.failure(Exception())
+        }
 
         viewModel.uiState.test {
-            val currentState = awaitItem()
+            testScheduler.advanceUntilIdle()
 
-            currentState.currentRates shouldBe CurrentRatesTestData.currentRates
-            currentState.selectedTabIndex shouldBe selectedTable.ordinal
-            currentState.isLoading shouldBe false
-            currentState.error shouldBe null
+            viewModel.onErrorMessageShown()
+
+            coEvery {
+                currentRatesRepository.getCurrentRates(any())
+            } coAnswers {
+                delay(1.seconds)
+                Result.success(CurrentRatesTestData.currentRates)
+            }
+
+            viewModel.getCurrentRates(tableType = selectedTable)
+            testScheduler.advanceUntilIdle()
+
+            // skip states from first fetch and loading from the second one
+            skipItems(5)
+            awaitItem() shouldBe CurrentRatesUiState(
+                currentRates = CurrentRatesTestData.currentRates,
+                selectedTabIndex = selectedTable.ordinal,
+            )
         }
     }
 
     @Test
     fun `When fetching data, state correctly indicates loading`() = runTest {
-        coEvery {
-            currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(CurrentRatesTestData.currentRates)
-
-        viewModel.getCurrentRates(tableType = TableType.B)
         viewModel.uiState.test {
-            awaitItem().isLoading shouldBe true
-        }
+            testScheduler.runCurrent()
+            val initialState = awaitItem()
 
-        testScheduler.runCurrent()
+            initialState shouldBe CurrentRatesUiState()
 
-        viewModel.uiState.test {
-            awaitItem().isLoading shouldBe false
+            testScheduler.runCurrent()
+            val loadingState = awaitItem()
+
+            loadingState shouldBe CurrentRatesUiState(isLoading = true)
+
+            testScheduler.runCurrent()
+            val finalState = awaitItem()
+
+            finalState shouldBe CurrentRatesUiState(
+                currentRates = CurrentRatesTestData.currentRates,
+            )
         }
     }
 
     @Test
     fun `On fetch failure, state contains thrown exception`() = runTest {
-        val expectedException = IllegalStateException()
-
         coEvery {
             currentRatesRepository.getCurrentRates(any())
-        } returns Result.failure(expectedException)
-
-        viewModel.getCurrentRates(tableType = TableType.B)
-        testScheduler.runCurrent()
+        } coAnswers {
+            delay(1.seconds)
+            Result.failure(IllegalStateException())
+        }
 
         viewModel.uiState.test {
-            val currentState = awaitItem()
+            testScheduler.advanceUntilIdle()
 
-            currentState.currentRates shouldBe emptyList()
-            currentState.selectedTabIndex shouldBe TableType.A.ordinal
-            currentState.isLoading shouldBe false
-            currentState.error shouldBe expectedException
+            viewModel.getCurrentRates(tableType = TableType.B)
+            testScheduler.advanceUntilIdle()
+
+            skipItems(4)
+            awaitItem().let {
+                it.currentRates shouldBe emptyList()
+                it.selectedTabIndex shouldBe TableType.A.ordinal
+                it.isLoading shouldBe false
+                it.error shouldBe IllegalStateException()
+            }
         }
     }
 
     @Test
     fun `When error occurs, tab index is set to its previous value`() = runTest {
-        coEvery {
-            currentRatesRepository.getCurrentRates(any())
-        } returns Result.success(CurrentRatesTestData.currentRates)
-
-        viewModel.getCurrentRates(tableType = TableType.B)
-        testScheduler.runCurrent()
-
-        coEvery {
-            currentRatesRepository.getCurrentRates(any())
-        } returns Result.failure(IllegalStateException())
-
-        viewModel.getCurrentRates(tableType = TableType.A)
-        testScheduler.runCurrent()
-
         viewModel.uiState.test {
+            testScheduler.advanceUntilIdle()
+
+            viewModel.getCurrentRates(tableType = TableType.B)
+            testScheduler.advanceUntilIdle()
+
+            coEvery {
+                currentRatesRepository.getCurrentRates(any())
+            } coAnswers {
+                delay(1.seconds)
+                Result.failure(IllegalStateException())
+            }
+
+            viewModel.getCurrentRates(tableType = TableType.A)
+            testScheduler.advanceUntilIdle()
+
+            skipItems(6)
             awaitItem().selectedTabIndex shouldBe TableType.B.ordinal
         }
     }
