@@ -44,7 +44,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CurrentRatesScreen(
     currentRatesViewModel: CurrentRatesViewModel = koinViewModel(),
-    onCurrencyListItemClick: (Currency) -> Unit,
+    onCurrencyListItemClick: (Currency, TableType) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -78,14 +78,14 @@ private fun CurrentRatesScreen(
     modifier: Modifier = Modifier,
     uiState: CurrentRatesUiState,
     onTabClick: (TableType) -> Unit,
-    onCurrencyListItemClick: (Currency) -> Unit,
+    onCurrencyListItemClick: (Currency, TableType) -> Unit,
 ) {
     Column(
-        modifier = modifier,
+        modifier = Modifier.fillMaxSize().then(modifier),
     ) {
         CurrentRatesTabRow(
             modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = uiState.selectedTabIndex,
+            selectedTabIndex = uiState.tableType.ordinal,
             onTabClick = onTabClick,
         )
 
@@ -100,7 +100,12 @@ private fun CurrentRatesScreen(
 
             CurrentRatesList(
                 currentRates = uiState.currentRates,
-                onItemClick = onCurrencyListItemClick,
+                onItemClick = {
+                    onCurrencyListItemClick(
+                        it,
+                        uiState.tableType,
+                    )
+                },
             )
         }
     }
@@ -137,7 +142,9 @@ private fun CurrentRatesList(
     onItemClick: (Currency) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().then(modifier),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
         items(
@@ -188,7 +195,9 @@ private fun CurrentRateItem(
         }
 
         Text(
-            modifier = Modifier.wrapContentSize().padding(8.dp),
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(8.dp),
             text = currentRate.middleValue.stripTrailingZeros().toPlainString(),
         )
     }
@@ -202,7 +211,7 @@ private fun PreviewCurrentRatesScreen() {
         CurrentRatesScreen(
             uiState = currentRatesUiState,
             onTabClick = {},
-            onCurrencyListItemClick = {},
+            onCurrencyListItemClick = { _, _ -> },
         )
     }
 }
@@ -214,7 +223,7 @@ private fun PreviewCurrentRatesScreenLoading() {
         CurrentRatesScreen(
             uiState = currentRatesUiState.copy(isLoading = true),
             onTabClick = {},
-            onCurrencyListItemClick = {},
+            onCurrencyListItemClick = { _, _ -> },
         )
     }
 }

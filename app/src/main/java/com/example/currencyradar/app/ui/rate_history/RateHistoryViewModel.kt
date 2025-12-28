@@ -27,14 +27,20 @@ class RateHistoryViewModel(
     @InjectedParam private val table: TableType,
     private val clock: Clock = Clock.System,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(RateHistoryUiState())
+    private val _uiState = MutableStateFlow(
+        RateHistoryUiState(
+            currency = currency,
+        )
+    )
 
     val uiState = _uiState.onStart {
         getRateHistory()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = RateHistoryUiState(),
+        initialValue = RateHistoryUiState(
+            currency = currency,
+        ),
     )
 
     fun getRateHistory(
@@ -64,10 +70,20 @@ class RateHistoryViewModel(
         result: Result<List<DailyRate>>,
     ) = result.fold(
         onSuccess = { rates ->
-            RateHistoryUiState(rateHistory = rates.sortedByDescending { it.date })
+            val ratesSorted = rates.sortedByDescending { it.date }
+            val rateUiStates = ratesSorted.map { it.toDailyRateUiState() }
+
+            currentState.copy(
+                rateHistory = rateUiStates,
+                isLoading = false,
+                error = null,
+            )
         },
         onFailure = {
-            currentState.copy(error = it, isLoading = false)
+            currentState.copy(
+                error = it,
+                isLoading = false,
+            )
         },
     )
 }

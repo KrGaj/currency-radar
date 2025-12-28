@@ -62,8 +62,10 @@ class RateHistoryViewModelTest {
             testScheduler.advanceUntilIdle()
 
             skipItems(2)
+
+            val rateHistoryUiStates = RateHistoryTestData.rateHistory.map { it.toDailyRateUiState() }
             awaitItem().let {
-                it.rateHistory.containsAll(RateHistoryTestData.rateHistory) shouldBe true
+                it.rateHistory.containsAll(rateHistoryUiStates) shouldBe true
                 it.isLoading shouldBe false
                 it.error shouldBe null
             }
@@ -84,7 +86,9 @@ class RateHistoryViewModelTest {
 
             skipItems(2)
             val item = awaitItem()
-            item.rateHistory shouldBe RateHistoryTestData.rateHistory.sortedByDescending { it.date }
+            item.rateHistory shouldBe RateHistoryTestData.rateHistory
+                .sortedByDescending { it.date }
+                .map { it.toDailyRateUiState() }
         }
     }
 
@@ -133,7 +137,10 @@ class RateHistoryViewModelTest {
 
             skipItems(4)
             awaitItem() shouldBe RateHistoryUiState(
-                rateHistory = RateHistoryTestData.rateHistory.sortedByDescending { it.date },
+                currency = CURRENCY,
+                rateHistory = RateHistoryTestData.rateHistory
+                    .sortedByDescending { it.date }
+                    .map { it.toDailyRateUiState() },
             )
         }
     }

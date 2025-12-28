@@ -88,7 +88,7 @@ class CurrentRatesViewModelTest {
             skipItems(5)
             awaitItem() shouldBe CurrentRatesUiState(
                 currentRates = CurrentRatesTestData.currentRates,
-                selectedTabIndex = selectedTable.ordinal,
+                tableType = selectedTable,
             )
         }
     }
@@ -133,7 +133,7 @@ class CurrentRatesViewModelTest {
             skipItems(4)
             awaitItem().let {
                 it.currentRates shouldBe emptyList()
-                it.selectedTabIndex shouldBe TableType.A.ordinal
+                it.tableType shouldBe TableType.A
                 it.isLoading shouldBe false
                 it.error shouldBe IllegalStateException()
             }
@@ -159,7 +159,7 @@ class CurrentRatesViewModelTest {
             testScheduler.advanceUntilIdle()
 
             skipItems(6)
-            awaitItem().selectedTabIndex shouldBe TableType.B.ordinal
+            awaitItem().tableType shouldBe TableType.B
         }
     }
 }

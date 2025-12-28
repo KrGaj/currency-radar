@@ -18,7 +18,7 @@ class CurrentRatesViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CurrentRatesUiState())
     val uiState = _uiState.onStart {
-        val tableType = TableType.entries[_uiState.value.selectedTabIndex]
+        val tableType = _uiState.value.tableType
         getCurrentRates(tableType)
     }.stateIn(
         scope = viewModelScope,
@@ -40,7 +40,7 @@ class CurrentRatesViewModel(
 
             _uiState.update {
                 ratesResult.fold(
-                    onSuccess = { data -> it.copy(currentRates = data, isLoading = false, selectedTabIndex = tableType.ordinal) },
+                    onSuccess = { data -> it.copy(currentRates = data, isLoading = false, tableType = tableType) },
                     onFailure = { error -> it.copy(error = error, isLoading = false) },
                 )
             }
