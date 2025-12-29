@@ -15,7 +15,7 @@ fun DailyRate.toDailyRateUiState(): DailyRateUiState {
     }
 
     return DailyRateUiState(
-        date = formatter.format(date),
-        middleValue = middleValue.toString(),
+        displayDate = formatter.format(date),
+        displayMiddleValue = middleValue.toString(),
     )
 }

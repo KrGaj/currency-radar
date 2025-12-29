@@ -18,6 +18,6 @@ data class RateHistoryDataUiState(
 
 @Immutable
 data class DailyRateUiState(
-    val date: String,
-    val middleValue: String,
+    val displayDate: String,
+    val displayMiddleValue: String,
 )

@@ -53,7 +53,7 @@ class CurrentRatesViewModelTest {
 
             skipItems(2)
             awaitItem() shouldBe CurrentRatesUiState(
-                currentRates = CurrentRatesTestData.currentRates,
+                currentRates = CurrentRatesTestData.currentRateUiStates,
             )
         }
     }
@@ -87,7 +87,7 @@ class CurrentRatesViewModelTest {
             // skip states from first fetch and loading from the second one
             skipItems(5)
             awaitItem() shouldBe CurrentRatesUiState(
-                currentRates = CurrentRatesTestData.currentRates,
+                currentRates = CurrentRatesTestData.currentRateUiStates,
                 tableType = selectedTable,
             )
         }
@@ -110,7 +110,7 @@ class CurrentRatesViewModelTest {
             val finalState = awaitItem()
 
             finalState shouldBe CurrentRatesUiState(
-                currentRates = CurrentRatesTestData.currentRates,
+                currentRates = CurrentRatesTestData.currentRateUiStates,
             )
         }
     }

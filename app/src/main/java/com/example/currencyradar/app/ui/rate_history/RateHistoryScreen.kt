@@ -121,7 +121,7 @@ private fun RateHistoryList(
             .then(modifier),
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
-        items(items = rateHistory, key = { it.date }) {
+        items(items = rateHistory, key = { it.displayDate }) {
             RateHistoryItem(
                 modifier = Modifier.padding(8.dp),
                 dailyRate = it,
@@ -142,10 +142,10 @@ private fun RateHistoryItem(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            text = dailyRate.date,
+            text = dailyRate.displayDate,
         )
         Text(
-            text = dailyRate.middleValue,
+            text = dailyRate.displayMiddleValue,
         )
     }
 }
@@ -178,16 +178,16 @@ private val CURRENCY = CurrencyUiState(
 
 private val RATES = listOf(
     DailyRateUiState(
-        date = "12.12.2025",
-        middleValue = "4.2271",
+        displayDate = "12.12.2025",
+        displayMiddleValue = "4.2271",
     ),
     DailyRateUiState(
-        date = "11.12.2025",
-        middleValue = "4.2284",
+        displayDate = "11.12.2025",
+        displayMiddleValue = "4.2284",
     ),
     DailyRateUiState(
-        date = "10.12.2025",
-        middleValue = "4.2274",
+        displayDate = "10.12.2025",
+        displayMiddleValue = "4.2274",
     ),
 )
 

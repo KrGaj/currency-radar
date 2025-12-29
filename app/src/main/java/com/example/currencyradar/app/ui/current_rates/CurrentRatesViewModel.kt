@@ -40,7 +40,10 @@ class CurrentRatesViewModel(
 
             _uiState.update {
                 ratesResult.fold(
-                    onSuccess = { data -> it.copy(currentRates = data, isLoading = false, tableType = tableType) },
+                    onSuccess = { data ->
+                        val displayData = data.map { rate -> rate.toCurrentRateUiState() }
+                        it.copy(currentRates = displayData, isLoading = false, tableType = tableType)
+                    },
                     onFailure = { error -> it.copy(error = error, isLoading = false) },
                 )
             }

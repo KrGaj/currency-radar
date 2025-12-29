@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.currencyradar.R
-import com.example.currencyradar.app.ui.common.toCapitalized
+import com.example.currencyradar.app.ui.common.models.CurrencyUiState
 import com.example.currencyradar.app.ui.theme.Typography
 import com.example.currencyradar.domain.models.Currency
 import com.example.currencyradar.domain.models.CurrentRate
@@ -98,7 +98,7 @@ private fun CurrentRatesScreen(
             currentRates = uiState.currentRates,
             onItemClick = {
                 onCurrencyListItemClick(
-                    it.code,
+                    it.displayCode,
                     uiState.tableType,
                 )
             },
@@ -133,8 +133,8 @@ private fun CurrentRatesTabRow(
 @Composable
 private fun CurrentRatesList(
     modifier: Modifier = Modifier,
-    currentRates: List<CurrentRate>,
-    onItemClick: (Currency) -> Unit,
+    currentRates: List<CurrentRateUiState>,
+    onItemClick: (CurrencyUiState) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -144,7 +144,7 @@ private fun CurrentRatesList(
     ) {
         items(
             items = currentRates,
-            key = { it.currency.code },
+            key = { it.displayCurrency.displayCode },
         ) {
             CurrentRateItem(
                 currentRate = it,
@@ -157,14 +157,14 @@ private fun CurrentRatesList(
 @Composable
 private fun CurrentRateItem(
     modifier: Modifier = Modifier,
-    currentRate: CurrentRate,
-    onClick: (Currency) -> Unit,
+    currentRate: CurrentRateUiState,
+    onClick: (CurrencyUiState) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                onClick = { onClick(currentRate.currency) },
+                onClick = { onClick(currentRate.displayCurrency) },
             )
             .then(modifier),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -175,8 +175,7 @@ private fun CurrentRateItem(
         ) {
             Text(
                 style = Typography.bodyLarge,
-                text = currentRate.currency.name
-                    .toCapitalized(),
+                text = currentRate.displayCurrency.displayName,
             )
 
             Spacer(
@@ -185,7 +184,7 @@ private fun CurrentRateItem(
 
             Text(
                 style = Typography.bodyMedium,
-                text = currentRate.currency.code,
+                text = currentRate.displayCurrency.displayCode,
             )
         }
 
@@ -193,7 +192,7 @@ private fun CurrentRateItem(
             modifier = Modifier
                 .wrapContentSize()
                 .padding(8.dp),
-            text = currentRate.middleValue.stripTrailingZeros().toPlainString(),
+            text = currentRate.displayMiddleValue,
         )
     }
 }
@@ -268,7 +267,7 @@ private val currentRates = listOf(
         ),
         middleValue = 0.3569.toBigDecimal(),
     ),
-)
+).map { it.toCurrentRateUiState() }
 
 private val currentRatesUiState = CurrentRatesUiState(
     currentRates = currentRates,
