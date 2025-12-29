@@ -20,4 +20,10 @@ data class RateHistoryDataUiState(
 data class DailyRateUiState(
     val displayDate: String,
     val displayMiddleValue: String,
-)
+    val trend: RateTrend,
+) {
+    enum class RateTrend {
+        NEUTRAL,
+        LARGE_DIFFERENCE,
+    }
+}

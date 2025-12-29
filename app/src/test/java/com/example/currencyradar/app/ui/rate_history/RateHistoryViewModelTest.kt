@@ -63,7 +63,13 @@ class RateHistoryViewModelTest {
 
             skipItems(2)
 
-            val rateHistoryUiStates = RateHistoryTestData.rateHistory.rates.map { it.toDailyRateUiState() }
+            val rateHistoryUiStates = RateHistoryTestData.rateHistory.rates
+                .map {
+                    it.toDailyRateUiState(
+                        referentialDailyRate = RateHistoryTestData.rateHistory.rates.last(),
+                        thresholdPercent = 0.1.toBigDecimal(),
+                    )
+                }
             awaitItem().let {
                 it.rateHistory?.rates?.containsAll(rateHistoryUiStates) shouldBe true
                 it.isLoading shouldBe false
@@ -86,7 +92,10 @@ class RateHistoryViewModelTest {
 
             skipItems(2)
             val item = awaitItem()
-            item.rateHistory shouldBe RateHistoryTestData.rateHistory.toRateHistoryDataUiState()
+            item.rateHistory shouldBe RateHistoryTestData.rateHistory.toRateHistoryDataUiState(
+                referentialRate = RateHistoryTestData.rateHistory.rates.last(),
+                thresholdPercent = 0.1.toBigDecimal(),
+            )
         }
     }
 
@@ -135,8 +144,47 @@ class RateHistoryViewModelTest {
 
             skipItems(4)
             awaitItem() shouldBe RateHistoryUiState(
-                rateHistory = RateHistoryTestData.rateHistory.toRateHistoryDataUiState(),
+                rateHistory = RateHistoryTestData.rateHistory.toRateHistoryDataUiState(
+                    referentialRate = RateHistoryTestData.rateHistory.rates.last(),
+                    thresholdPercent = 0.1.toBigDecimal(),
+                ),
             )
+        }
+    }
+
+    @Test
+    fun `Rate history contains correct information about trends`() = runTest {
+        val referentialValue = 5.0.toBigDecimal()
+        val thresholdPercent = 0.05.toBigDecimal()
+        val minimalValue = referentialValue - 2.toBigDecimal() * thresholdPercent
+        val step = ((referentialValue + thresholdPercent * 2.toBigDecimal()) -
+                minimalValue) / RateHistoryTestData.rateHistory.rates.size.toBigDecimal()
+        val testRates = RateHistoryTestData.rateHistory.rates.mapIndexed { index, rate ->
+            rate.copy(middleValue = rate.middleValue - thresholdPercent + index.toBigDecimal() * step)
+        }
+
+        val testRateHistory = RateHistoryTestData.rateHistory.copy(rates = testRates)
+
+        coEvery {
+            repository.getRateHistory(any(), any(), any(), any())
+        } coAnswers {
+            delay(1.seconds)
+            Result.success(testRateHistory)
+        }
+
+        viewModel.uiState.test {
+            testScheduler.advanceUntilIdle()
+
+            skipItems(2)
+            awaitItem().let {
+                it.rateHistory?.rates?.all { rate ->
+                    if (rate.displayMiddleValue.toBigDecimal() !in (referentialValue - thresholdPercent)..(referentialValue + thresholdPercent)) {
+                        rate.trend == DailyRateUiState.RateTrend.LARGE_DIFFERENCE
+                    } else {
+                        rate.trend == DailyRateUiState.RateTrend.NEUTRAL
+                    }
+                }
+            }
         }
     }
 

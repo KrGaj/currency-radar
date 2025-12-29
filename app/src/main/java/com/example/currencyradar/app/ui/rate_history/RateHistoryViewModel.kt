@@ -65,7 +65,10 @@ class RateHistoryViewModel(
         result: Result<RateHistory>,
     ) = result.fold(
         onSuccess = { history ->
-            val rateHistory = history.toRateHistoryDataUiState()
+            val rateHistory = history.toRateHistoryDataUiState(
+                referentialRate = history.rates.first(),
+                thresholdPercent = 0.1.toBigDecimal()
+            )
 
             currentState.copy(
                 rateHistory = rateHistory,
