@@ -1,10 +1,9 @@
 package com.example.currencyradar.data.remote.client
 
 import com.example.currencyradar.data.remote.client.resources.Rates
-import com.example.currencyradar.data.remote.dto.current_rates.CurrentRatesTableDto
 import com.example.currencyradar.data.remote.client.resources.Tables
+import com.example.currencyradar.data.remote.dto.current_rates.CurrentRatesTableDto
 import com.example.currencyradar.data.remote.dto.rate_history.RateHistoryDto
-import com.example.currencyradar.domain.models.Currency
 import com.example.currencyradar.domain.models.TableType
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -74,7 +73,7 @@ class ApiClient(
     }
 
     suspend fun getRateHistory(
-        currency: Currency,
+        currencyCode: String,
         tableType: TableType,
         from: LocalDate,
         to: LocalDate,
@@ -84,7 +83,7 @@ class ApiClient(
         )
         val currencyResource = Rates.Table.Code(
             parent = ratesTableResource,
-            code = currency.code,
+            code = currencyCode,
         )
         val ratesInRangeResource = Rates.Table.Code.DateRange(
             parent = currencyResource,

@@ -10,7 +10,7 @@ import com.example.currencyradar.app.ui.current_rates.CurrentRatesScreen
 import com.example.currencyradar.app.ui.rate_history.RateHistoryScreen
 import com.example.currencyradar.app.ui.rate_history.RateHistoryViewModel
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
+import org.koin.core.parameter.parameterSetOf
 
 @Composable
 fun AppNavigation() {
@@ -25,10 +25,10 @@ fun AppNavigation() {
         entryProvider = entryProvider {
             entry<Screen.CurrentRates> {
                 CurrentRatesScreen(
-                    onCurrencyListItemClick = { currency, tableType ->
+                    onCurrencyListItemClick = { currencyCode, tableType ->
                         backStack.add(
                             Screen.RateHistory(
-                                currency = currency,
+                                currencyCode = currencyCode,
                                 tableType = tableType,
                             )
                         )
@@ -38,7 +38,7 @@ fun AppNavigation() {
 
             entry<Screen.RateHistory> {
                 val viewModel: RateHistoryViewModel = koinViewModel {
-                    parametersOf(it.currency, it.tableType)
+                    parameterSetOf(it.currencyCode, it.tableType)
                 }
 
                 RateHistoryScreen(

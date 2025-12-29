@@ -38,7 +38,7 @@ class RateHistoryRepositoryDefaultTest {
             apiClient.getRateHistory(any(), any(), any(), any())
         } returns RateHistoryTestData.rateHistoryDto
 
-        val result = repository.getRateHistory(RateHistoryTestData.currency, tableType, dataFrom, dataTo)
+        val result = repository.getRateHistory(RateHistoryTestData.currency.code, tableType, dataFrom, dataTo)
 
         result shouldBe expectedResult
     }
@@ -51,7 +51,7 @@ class RateHistoryRepositoryDefaultTest {
             apiClient.getRateHistory(any(), any(), any(), any())
         } throws expectedException
 
-        val result = repository.getRateHistory(mockk(), mockk(), mockk(), mockk())
+        val result = repository.getRateHistory(RateHistoryTestData.currency.code, mockk(), mockk(), mockk())
         result shouldBe Result.failure(expectedException)
     }
 }

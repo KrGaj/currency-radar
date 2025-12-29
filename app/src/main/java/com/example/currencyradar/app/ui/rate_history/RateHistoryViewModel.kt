@@ -2,8 +2,7 @@ package com.example.currencyradar.app.ui.rate_history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.currencyradar.domain.models.Currency
-import com.example.currencyradar.domain.models.DailyRate
+import com.example.currencyradar.domain.models.RateHistory
 import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.domain.repository.RateHistoryRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,14 +22,12 @@ import kotlin.time.Clock
 @KoinViewModel
 class RateHistoryViewModel(
     private val repository: RateHistoryRepository,
-    @InjectedParam private val currency: Currency,
+    @InjectedParam private val currencyCode: String,
     @InjectedParam private val table: TableType,
     private val clock: Clock = Clock.System,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        RateHistoryUiState(
-            currency = currency,
-        )
+        RateHistoryUiState()
     )
 
     val uiState = _uiState.onStart {
@@ -38,9 +35,7 @@ class RateHistoryViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = RateHistoryUiState(
-            currency = currency,
-        ),
+        initialValue = RateHistoryUiState(),
     )
 
     fun getRateHistory(
@@ -53,7 +48,7 @@ class RateHistoryViewModel(
             val dateFrom = dateTo - latestDaysRange
 
             val result = repository.getRateHistory(
-                currency = currency,
+                currencyCode = currencyCode,
                 tableType = table,
                 from = dateFrom,
                 to = dateTo,
@@ -67,14 +62,13 @@ class RateHistoryViewModel(
 
     private fun produceStateFromResult(
         currentState: RateHistoryUiState,
-        result: Result<List<DailyRate>>,
+        result: Result<RateHistory>,
     ) = result.fold(
-        onSuccess = { rates ->
-            val ratesSorted = rates.sortedByDescending { it.date }
-            val rateUiStates = ratesSorted.map { it.toDailyRateUiState() }
+        onSuccess = { history ->
+            val rateHistory = history.toRateHistoryDataUiState()
 
             currentState.copy(
-                rateHistory = rateUiStates,
+                rateHistory = rateHistory,
                 isLoading = false,
                 error = null,
             )

@@ -37,7 +37,7 @@ class RateHistoryViewModelTest {
         repository = mockk()
         viewModel = RateHistoryViewModel(
             repository = repository,
-            currency = CURRENCY,
+            currencyCode = CURRENCY.code,
             table = TABLE_TYPE,
             clock = CLOCK_FAKE,
         )
@@ -63,9 +63,9 @@ class RateHistoryViewModelTest {
 
             skipItems(2)
 
-            val rateHistoryUiStates = RateHistoryTestData.rateHistory.map { it.toDailyRateUiState() }
+            val rateHistoryUiStates = RateHistoryTestData.rateHistory.rates.map { it.toDailyRateUiState() }
             awaitItem().let {
-                it.rateHistory.containsAll(rateHistoryUiStates) shouldBe true
+                it.rateHistory?.rates?.containsAll(rateHistoryUiStates) shouldBe true
                 it.isLoading shouldBe false
                 it.error shouldBe null
             }
@@ -73,7 +73,7 @@ class RateHistoryViewModelTest {
     }
 
     @Test
-    fun `State contains rate history sorted by date in descending order`() = runTest {
+    fun `State contains rate history`() = runTest {
         coEvery {
             repository.getRateHistory(any(), any(), any(), any())
         } coAnswers {
@@ -86,9 +86,7 @@ class RateHistoryViewModelTest {
 
             skipItems(2)
             val item = awaitItem()
-            item.rateHistory shouldBe RateHistoryTestData.rateHistory
-                .sortedByDescending { it.date }
-                .map { it.toDailyRateUiState() }
+            item.rateHistory shouldBe RateHistoryTestData.rateHistory.toRateHistoryDataUiState()
         }
     }
 
@@ -106,7 +104,7 @@ class RateHistoryViewModelTest {
 
             skipItems(2)
             awaitItem().let {
-                it.rateHistory shouldBe emptyList()
+                it.rateHistory shouldBe null
                 it.isLoading shouldBe false
                 it.error shouldBe IllegalStateException()
             }
@@ -137,10 +135,7 @@ class RateHistoryViewModelTest {
 
             skipItems(4)
             awaitItem() shouldBe RateHistoryUiState(
-                currency = CURRENCY,
-                rateHistory = RateHistoryTestData.rateHistory
-                    .sortedByDescending { it.date }
-                    .map { it.toDailyRateUiState() },
+                rateHistory = RateHistoryTestData.rateHistory.toRateHistoryDataUiState(),
             )
         }
     }

@@ -1,6 +1,6 @@
 package com.example.currencyradar.test_data
 
-import com.example.currencyradar.data.mapper.toDailyRates
+import com.example.currencyradar.data.mapper.toRateHistory
 import com.example.currencyradar.data.remote.dto.rate_history.DailyRateDto
 import com.example.currencyradar.data.remote.dto.rate_history.RateHistoryDto
 import com.example.currencyradar.domain.models.Currency
@@ -62,7 +62,7 @@ object RateHistoryTestData {
         rates = rateHistoryDtoEntries,
     )
 
-    val rateHistory = rateHistoryDto.toDailyRates()
+    val rateHistory = rateHistoryDto.toRateHistory()
 
     val currency = Currency(
         rateHistoryDto.currencyName,

@@ -1,9 +1,8 @@
 package com.example.currencyradar.data.repository
 
-import com.example.currencyradar.data.mapper.toDailyRates
+import com.example.currencyradar.data.mapper.toRateHistory
 import com.example.currencyradar.data.remote.client.ApiClient
-import com.example.currencyradar.domain.models.Currency
-import com.example.currencyradar.domain.models.DailyRate
+import com.example.currencyradar.domain.models.RateHistory
 import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.domain.repository.RateHistoryRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,20 +17,20 @@ class RateHistoryRepositoryDefault(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : RateHistoryRepository {
     override suspend fun getRateHistory(
-        currency: Currency,
+        currencyCode: String,
         tableType: TableType,
         from: LocalDate,
         to: LocalDate,
-    ): Result<List<DailyRate>> = withContext(dispatcher) {
+    ): Result<RateHistory> = withContext(dispatcher) {
         Result.runCatching {
             val response = apiClient.getRateHistory(
-                currency = currency,
+                currencyCode = currencyCode,
                 tableType = tableType,
                 from = from,
                 to = to,
             )
 
-            return@runCatching response.toDailyRates()
+            return@runCatching response.toRateHistory()
         }
     }
 }

@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.char
 
 
-fun DailyRate.toDailyRateUiState(): RateHistoryUiState.DailyRateUiState {
+fun DailyRate.toDailyRateUiState(): DailyRateUiState {
     val formatter = LocalDate.Format {
         day()
         char('.')
@@ -14,7 +14,7 @@ fun DailyRate.toDailyRateUiState(): RateHistoryUiState.DailyRateUiState {
         year()
     }
 
-    return RateHistoryUiState.DailyRateUiState(
+    return DailyRateUiState(
         date = formatter.format(date),
         middleValue = middleValue.toString(),
     )

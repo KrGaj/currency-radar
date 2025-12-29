@@ -2,7 +2,6 @@ package com.example.currencyradar.app.ui.current_rates
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -33,18 +32,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.currencyradar.R
-import com.example.currencyradar.app.common.toCapitalized
+import com.example.currencyradar.app.ui.common.toCapitalized
 import com.example.currencyradar.app.ui.theme.Typography
 import com.example.currencyradar.domain.models.Currency
-import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.domain.models.CurrentRate
+import com.example.currencyradar.domain.models.TableType
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CurrentRatesScreen(
     currentRatesViewModel: CurrentRatesViewModel = koinViewModel(),
-    onCurrencyListItemClick: (Currency, TableType) -> Unit,
+    onCurrencyListItemClick: (String, TableType) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -78,7 +77,7 @@ private fun CurrentRatesScreen(
     modifier: Modifier = Modifier,
     uiState: CurrentRatesUiState,
     onTabClick: (TableType) -> Unit,
-    onCurrencyListItemClick: (Currency, TableType) -> Unit,
+    onCurrencyListItemClick: (String, TableType) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize().then(modifier),
@@ -89,25 +88,21 @@ private fun CurrentRatesScreen(
             onTabClick = onTabClick,
         )
 
-        Box(
-            contentAlignment = Alignment.TopCenter,
-        ) {
-            if (uiState.isLoading) {
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            CurrentRatesList(
-                currentRates = uiState.currentRates,
-                onItemClick = {
-                    onCurrencyListItemClick(
-                        it,
-                        uiState.tableType,
-                    )
-                },
+        if (uiState.isLoading) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
             )
         }
+
+        CurrentRatesList(
+            currentRates = uiState.currentRates,
+            onItemClick = {
+                onCurrencyListItemClick(
+                    it.code,
+                    uiState.tableType,
+                )
+            },
+        )
     }
 }
 

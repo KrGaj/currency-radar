@@ -63,7 +63,7 @@ class ApiClientTest {
         apiClient = ApiClient(mockEngine)
 
         val response = apiClient.getRateHistory(
-            currency = currency,
+            currencyCode = currency.code,
             tableType = TableType.valueOf(testData.table),
             from = testData.rates.first().effectiveDate,
             to = testData.rates.last().effectiveDate,

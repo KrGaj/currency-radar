@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,9 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.currencyradar.R
+import com.example.currencyradar.app.ui.common.models.CurrencyUiState
 import com.example.currencyradar.app.ui.theme.CurrencyRadarTheme
 import com.example.currencyradar.app.ui.theme.Typography
-import com.example.currencyradar.domain.models.Currency
 import kotlinx.coroutines.launch
 
 @Composable
@@ -65,34 +66,46 @@ private fun RateHistoryScreen(
     uiState: RateHistoryUiState,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().then(modifier),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
     ) {
-        CurrencyDetails(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            currency = uiState.currency,
-        )
-        RateHistoryList(
-            rateHistory = uiState.rateHistory,
-        )
+        if (uiState.isLoading) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        if (uiState.rateHistory != null) {
+            CurrencyDetails(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                currency = uiState.rateHistory.currency,
+            )
+            RateHistoryList(
+                rateHistory = uiState.rateHistory.rates,
+            )
+        }
     }
 }
 
 @Composable
 private fun CurrencyDetails(
     modifier: Modifier = Modifier,
-    currency: Currency,
+    currency: CurrencyUiState,
 ) {
     Column(
         modifier = modifier,
     ) {
         Text(
             style = Typography.titleLarge,
-            text = currency.name,
+            text = currency.displayName,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             style = Typography.titleMedium,
-            text = currency.code,
+            text = currency.displayCode,
         )
     }
 }
@@ -100,7 +113,7 @@ private fun CurrencyDetails(
 @Composable
 private fun RateHistoryList(
     modifier: Modifier = Modifier,
-    rateHistory: List<RateHistoryUiState.DailyRateUiState>,
+    rateHistory: List<DailyRateUiState>,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -120,10 +133,12 @@ private fun RateHistoryList(
 @Composable
 private fun RateHistoryItem(
     modifier: Modifier = Modifier,
-    dailyRate: RateHistoryUiState.DailyRateUiState,
+    dailyRate: DailyRateUiState,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().then(modifier),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
@@ -146,27 +161,41 @@ private fun PreviewRateHistoryScreen() {
     }
 }
 
-private val CURRENCY = Currency(
-    name = "Euro",
-    code = "EUR",
+@Preview(showBackground = true)
+@Composable
+private fun PreviewRateHistoryScreenLoading() {
+    CurrencyRadarTheme {
+        RateHistoryScreen(
+            uiState = UI_STATE.copy(isLoading = true),
+        )
+    }
+}
+
+private val CURRENCY = CurrencyUiState(
+    displayName = "Euro",
+    displayCode = "EUR",
 )
 
-private val RATE_HISTORY = listOf(
-    RateHistoryUiState.DailyRateUiState(
+private val RATES = listOf(
+    DailyRateUiState(
         date = "12.12.2025",
         middleValue = "4.2271",
     ),
-    RateHistoryUiState.DailyRateUiState(
+    DailyRateUiState(
         date = "11.12.2025",
         middleValue = "4.2284",
     ),
-    RateHistoryUiState.DailyRateUiState(
+    DailyRateUiState(
         date = "10.12.2025",
         middleValue = "4.2274",
     ),
 )
 
-private val UI_STATE = RateHistoryUiState(
+private val RATE_HISTORY = RateHistoryDataUiState(
     currency = CURRENCY,
+    rates = RATES,
+)
+
+private val UI_STATE = RateHistoryUiState(
     rateHistory = RATE_HISTORY,
 )
