@@ -86,4 +86,10 @@ class RateHistoryViewModel(
             )
         },
     )
+
+    fun onErrorMessageShown() {
+        _uiState.update {
+            it.copy(error = null)
+        }
+    }
 }
