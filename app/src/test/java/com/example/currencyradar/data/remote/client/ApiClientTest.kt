@@ -1,7 +1,9 @@
 package com.example.currencyradar.data.remote.client
 
+import com.example.currencyradar.domain.models.Currency
 import com.example.currencyradar.domain.models.TableType
 import com.example.currencyradar.test_data.CurrentRatesTestData
+import com.example.currencyradar.test_data.RateHistoryTestData
 import io.kotest.matchers.shouldBe
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -10,15 +12,14 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import org.junit.Before
 import org.junit.Test
 
 class ApiClientTest {
     private lateinit var mockEngine: MockEngine
     private lateinit var apiClient: ApiClient
 
-    @Before
-    fun setUp() {
+    @Test
+    fun `Client returns correct table`() = runTest {
         mockEngine = MockEngine { request ->
             val urlSegments = request.url.segments
 
@@ -36,11 +37,38 @@ class ApiClientTest {
         }
 
         apiClient = ApiClient(mockEngine)
+
+        val response = apiClient.getCurrentRatesTable(TableType.A)
+        response shouldBe CurrentRatesTestData.tableA
     }
 
     @Test
-    fun `Client returns correct table`() = runTest {
-        val response = apiClient.getCurrentRatesTable(TableType.A)
-        response shouldBe CurrentRatesTestData.tableA
+    fun `Client returns correct rate history`() = runTest {
+        val testData = RateHistoryTestData.rateHistoryDto
+        val currency = Currency(
+            name = testData.currencyName,
+            code = testData.currencyCode,
+        )
+
+        mockEngine = MockEngine {
+            val content = Json.encodeToString(testData)
+
+            respond(
+                content = content,
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json"),
+            )
+        }
+
+        apiClient = ApiClient(mockEngine)
+
+        val response = apiClient.getRateHistory(
+            currencyCode = currency.code,
+            tableType = TableType.valueOf(testData.table),
+            from = testData.rates.first().effectiveDate,
+            to = testData.rates.last().effectiveDate,
+        )
+
+        response shouldBe testData
     }
 }

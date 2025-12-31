@@ -1,5 +1,6 @@
 package com.example.currencyradar.test_data
 
+import com.example.currencyradar.app.ui.current_rates.toCurrentRateUiState
 import com.example.currencyradar.data.remote.dto.current_rates.CurrentRatesTableDto
 import com.example.currencyradar.data.remote.dto.current_rates.CurrentRateDto
 import com.example.currencyradar.domain.models.Currency
@@ -61,4 +62,6 @@ object CurrentRatesTestData {
             middleValue = 0.3569.toBigDecimal(),
         ),
     )
+
+    val currentRateUiStates = currentRates.map { it.toCurrentRateUiState() }
 }
